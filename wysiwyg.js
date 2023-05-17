@@ -14,6 +14,26 @@ document.getElementById('editor').addEventListener('mouseup', function() {
     }
     
 });
+document.getElementById('editor').addEventListener('mouseenter', function() {
+    let selection = window.getSelection();
+    let selectedText = selection.toString();
+    let menu = document.getElementById('context-menu');
+    if (selectedText.length > 0) {
+        let range = selection.getRangeAt(0);
+        let rect = range.getBoundingClientRect();
+        menu.style.left = rect.left + 'px';
+        menu.style.top = rect.top - rect.height + 'px';
+
+        menu.style.display = 'block';
+    } else {
+        menu.style.display = 'none';
+    }
+});
+
+document.getElementById('editor').addEventListener('mouseleave', function() {
+    let menu = document.getElementById('context-menu');
+    menu.style.display = 'none';
+});
 
 document.getElementById('bold').addEventListener('click', function() {
     let selection = window.getSelection();
