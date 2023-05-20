@@ -1,4 +1,4 @@
-const editableDiv = document.querySelector('div[contenteditable=true]');
+const editableDiv = document.getElementById('editor');
 
 editableDiv.addEventListener('input', function() {
     console.log("I'm listening");

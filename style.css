@@ -1,4 +1,17 @@
+#editor {
+    padding: 24px;;
+}
+
 #context-menu {
     display: none;
     position: absolute;
+}
+
+#context-menu #url {
+    display: none;
+}
+
+.link {
+    color: blue;
+    text-decoration: underline;
 }
