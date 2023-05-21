@@ -1,3 +1,4 @@
+// Objects
 const editor = document.getElementById('editor');
 const menu = document.getElementById('context-menu');
 const url = document.getElementById('url');
@@ -10,9 +11,45 @@ let selection = window.getSelection();
 let savedRange;
 let selectedElement;
 
+// Functions
 function clearSelection() {window.getSelection().removeAllRanges();};
 function hideMenu() {menu.style.display = 'none';};
 
+function buttonFormatting(object, tag) {
+    object.addEventListener('click', function() {
+        if (!selection.rangeCount) return;
+        let range = selection.getRangeAt(0);
+        let parentNode = range.commonAncestorContainer.parentNode;
+    
+        if (parentNode.nodeName.toLowerCase() != tag) {
+            let selectedText = range.extractContents();
+            let newElement = document.createElement(tag);
+            newElement.appendChild(selectedText);
+
+            if (tag === 'a') {
+                newElement.setAttribute('class', 'link');
+                link.textContent = 'Remove link';
+            }
+
+            range.insertNode(newElement);
+            clearSelection();
+            hideMenu();
+        } else {
+            let docFrag = document.createDocumentFragment();
+
+            if (tag === 'a') {
+                link.textContent = 'Add link';
+            }
+
+            while (parentNode.firstChild) {
+                docFrag.appendChild(parentNode.firstChild);
+            }
+            parentNode.parentNode.replaceChild(docFrag, parentNode);
+            clearSelection();
+            hideMenu();
+        }
+    });
+}
 
 // Menu
 editor.addEventListener('mouseup', function() {
@@ -57,6 +94,7 @@ url.addEventListener('click', function(event) {
 // Attach href to the 'a' tag
 url.addEventListener('keypress', function(event) {
     if (event.key === 'Enter') {
+        event.preventDefault();
         if (savedRange != null) {
             selection.removeAllRanges();
             selection.addRange(savedRange);
@@ -76,101 +114,15 @@ url.addEventListener('keypress', function(event) {
     }
 });
 
-// Heading
-heading.addEventListener('click', function() {
-    if (!selection.rangeCount) return;
-    let range = selection.getRangeAt(0);
-    let parentNode = range.commonAncestorContainer.parentNode;
 
-    if (parentNode.nodeName.toLowerCase() != 'h1') {
-        let selectedText = range.extractContents();
-        let newElement = document.createElement('h1');
-        newElement.appendChild(selectedText);
-        range.insertNode(newElement);
-        clearSelection();
-        hideMenu();
-    } else {
-        let docFrag = document.createDocumentFragment();
-        while (parentNode.firstChild) {
-            docFrag.appendChild(parentNode.firstChild);
-        }
-        parentNode.parentNode.replaceChild(docFrag, parentNode);
-        clearSelection();
-        hideMenu();
-    }
-});
+// Heading
+buttonFormatting(heading, 'h1');
 
 // Bold
-bold.addEventListener('click', function() {
-    if (!selection.rangeCount) return;
-    let range = selection.getRangeAt(0);
-    let parentNode = range.commonAncestorContainer.parentNode;
-
-    if (parentNode.nodeName.toLowerCase() != 'b') {
-        let selectedText = range.extractContents();
-        let newElement = document.createElement('b');
-        newElement.appendChild(selectedText);
-        range.insertNode(newElement);
-        clearSelection();
-        hideMenu();
-    } else {
-        let docFrag = document.createDocumentFragment();
-        while (parentNode.firstChild) {
-            docFrag.appendChild(parentNode.firstChild);
-        }
-        parentNode.parentNode.replaceChild(docFrag, parentNode);
-        clearSelection();
-        hideMenu();
-    }
-});
+buttonFormatting(bold, 'b');
 
 // Italic
-italic.addEventListener('click', function() {
-    if (!selection.rangeCount) return;
-    let range = selection.getRangeAt(0);
-    let parentNode = range.commonAncestorContainer.parentNode;
-
-    if (parentNode.nodeName.toLowerCase() != 'i') {
-        let selectedText = range.extractContents();
-        let newElement = document.createElement('i');
-        newElement.appendChild(selectedText);
-        range.insertNode(newElement);
-        clearSelection();
-        hideMenu();
-    } else {
-        let docFrag = document.createDocumentFragment();
-        while (parentNode.firstChild) {
-            docFrag.appendChild(parentNode.firstChild);
-        }
-        parentNode.parentNode.replaceChild(docFrag, parentNode);
-        clearSelection();
-        hideMenu();
-    }
-});
+buttonFormatting(italic, 'i');
 
 // Link
-link.addEventListener('click', function() {
-    if (!selection.rangeCount) return;
-    let range = selection.getRangeAt(0);
-    let parentNode = range.commonAncestorContainer.parentNode;
-
-    if (parentNode.nodeName.toLowerCase() != 'a') {
-        let selectedText = range.extractContents();
-        let newElement = document.createElement('a');
-        newElement.appendChild(selectedText);
-        newElement.setAttribute('class', 'link');
-        range.insertNode(newElement);
-        clearSelection();
-        hideMenu();
-        
-    } else {
-        let docFrag = document.createDocumentFragment();
-        while (parentNode.firstChild) {
-            docFrag.appendChild(parentNode.firstChild);
-        }
-        parentNode.parentNode.replaceChild(docFrag, parentNode);
-        clearSelection();
-        hideMenu();
-    }
-});
-
+buttonFormatting(link, 'a');
