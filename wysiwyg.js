@@ -5,6 +5,7 @@ const url = document.getElementById('url');
 const heading = document.getElementById('heading');
 const bold = document.getElementById('bold');
 const italic = document.getElementById('italic');
+const image = document.getElementById('image');
 const link = document.getElementById('link');
 
 let selection = window.getSelection();
@@ -115,6 +116,7 @@ url.addEventListener('keypress', function(event) {
 });
 
 
+
 // Heading
 buttonFormatting(heading, 'h1');
 
@@ -126,3 +128,23 @@ buttonFormatting(italic, 'i');
 
 // Link
 buttonFormatting(link, 'a');
+
+// Image
+image.addEventListener('click', function() {
+    document.getElementById('file').click();
+});
+
+document.getElementById('file').addEventListener('change', function(e){
+    let selectedFile = e.target.files[0];
+    let reader = new FileReader;
+
+    reader.onload = function(event) {
+        let img = new Image();
+        img.src = event.target.result;
+
+        let range = selection.getRangeAt(0);
+        range.insertNode(img);
+    };
+
+    reader.readAsDataURL(selectedFile);
+});

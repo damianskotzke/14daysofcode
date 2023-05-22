@@ -2,12 +2,16 @@
     padding: 24px;;
 }
 
+#editor img {
+    width: 100%;
+}
+
 #context-menu {
     display: none;
     position: absolute;
 }
 
-#context-menu #url {
+#context-menu #url, #file {
     display: none;
 }
 
