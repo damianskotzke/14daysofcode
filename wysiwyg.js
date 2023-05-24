@@ -1,3 +1,23 @@
+// Initialise Supabase
+import { createClient } from 'https://cdn.skypack.dev/@supabase/supabase-js';
+
+const supabaseUrl = 'http://localhost:54321';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU'; // your anon key
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+// Load data
+document.addEventListener('DOMContentLoaded', async function() {
+    const { data, error} = await supabase
+        .from('contents')
+        .select('content')
+        .eq('id', 1)
+        .single();
+
+    if (data && data.content) {
+        editor.innerHTML = JSON.parse(data.content).content;
+    };
+});
+
 // Objects
 const editor = document.getElementById('editor');
 const menu = document.getElementById('context-menu');
@@ -149,7 +169,7 @@ document.getElementById('file').addEventListener('change', function(e){
     reader.readAsDataURL(selectedFile);
 });
 
-// Markdown
+// Markdown content to link
 editor.addEventListener('input', function() {
     const regexLink = /\[\[(.+?)\]\]/;
     const content = editor.textContent;
@@ -161,7 +181,7 @@ editor.addEventListener('input', function() {
             const node = walker.currentNode;
             console.log(node);
             
-            // Detect * and make the content bold
+            // Detect [[content]] and make the content a link
             let match = regexLink.exec(node.textContent);
             while (match !== null) {
                 const matchStart = match.index;
@@ -202,4 +222,32 @@ editor.addEventListener('input', function() {
         }
     }
     
+});
+
+// Saving as JSON file
+/*editor.addEventListener('blur', function() {
+    let editorContent = editor.innerHTML;
+    let jsonObject = {
+        content: editorContent
+    };
+    jsonContent = JSON.stringify(jsonObject);
+    let blob = new Blob([jsonContent], {type: 'application/json'});
+    let url = URL.createObjectURL(blob);
+    let downloadLink = document.createElement('a');
+    downloadLink.href = url;
+    downloadLink.download = 'content.json';
+    downloadLink.click();
+});*/
+
+// Saving to Supabase
+editor.addEventListener('blur', async function() {
+    let editorContent = editor.innerHTML;
+    let jsonObject = {
+        content: editorContent
+    };
+    
+    // Save the content to the database
+    const { data, error } = await supabase
+        .from('contents')
+        .upsert({ id: 1, content: JSON.stringify(jsonObject) });
 });
