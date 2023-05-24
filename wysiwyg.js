@@ -29,7 +29,7 @@ function buttonFormatting(object, tag) {
 
             if (tag === 'a') {
                 newElement.setAttribute('class', 'link');
-                link.textContent = 'Remove link';
+                //link.textContent = 'Remove link';
             }
 
             range.insertNode(newElement);
@@ -39,7 +39,7 @@ function buttonFormatting(object, tag) {
             let docFrag = document.createDocumentFragment();
 
             if (tag === 'a') {
-                link.textContent = 'Add link';
+                //link.textContent = 'Add link';
             }
 
             while (parentNode.firstChild) {
@@ -147,4 +147,59 @@ document.getElementById('file').addEventListener('change', function(e){
     };
 
     reader.readAsDataURL(selectedFile);
+});
+
+// Markdown
+editor.addEventListener('input', function() {
+    const regexLink = /\[\[(.+?)\]\]/;
+    const content = editor.textContent;
+
+    if (regexLink.test(content)) {
+        const walker = document.createTreeWalker(editor, NodeFilter.SHOW_TEXT);
+
+        while (walker.nextNode()) {
+            const node = walker.currentNode;
+            console.log(node);
+            
+            // Detect * and make the content bold
+            let match = regexLink.exec(node.textContent);
+            while (match !== null) {
+                const matchStart = match.index;
+                console.log(matchStart);
+                const matchEnd = match.index + match[0].length;
+                console.log(matchEnd);
+                    
+                const before = document.createTextNode(node.textContent.slice(0,matchStart));
+                console.log(before);
+                const linkInside = document.createTextNode(node.textContent.slice(matchStart + 2, matchEnd - 2));
+                console.log(linkInside);
+                const after = document.createTextNode(node.textContent.slice(matchEnd));
+                console.log(after);
+    
+                node.parentNode.insertBefore(before, node);
+                node.parentNode.insertBefore(after, node);
+    
+                const linkElement = document.createElement('a');
+                linkElement.appendChild(linkInside);
+                node.parentNode.insertBefore(linkElement, after);
+                node.parentNode.removeChild(node);
+    
+                walker.currentNode = after;
+
+                // Append zero-width space which moves it outside of the strong tag allow the caret to adjust
+                editor.appendChild(document.createTextNode('\u200B'));
+
+                // Position the caret at the end of the content
+                const selection = window.getSelection();
+                const range = document.createRange();
+                range.selectNodeContents(editor);
+                range.collapse(false); // false means collapse to the end
+                selection.removeAllRanges();
+                selection.addRange(range);
+                match = null;
+
+            }
+        }
+    }
+    
 });

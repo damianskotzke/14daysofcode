@@ -15,7 +15,7 @@
     display: none;
 }
 
-.link {
+.link, a {
     color: blue;
     text-decoration: underline;
 }
