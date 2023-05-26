@@ -1,5 +1,10 @@
-#editor {
+body {
     padding: 24px;;
+}
+#editor {
+    margin-top: 48px;
+    font-family: Helvetica;
+    outline: none;
 }
 
 #editor img {
@@ -9,13 +14,42 @@
 #context-menu {
     display: none;
     position: absolute;
+    
+    border-radius: 4px;
+    background-color: #eee;
+    /*box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.16);*/
 }
 
 #context-menu #url, #file {
     display: none;
 }
 
+#context-menu button {
+    background-color: #eee;
+    border: 0px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    font-family: Helvetica;
+    padding: 8px;
+}
+
 .link, a {
     color: blue;
     text-decoration: underline;
+}
+#database button {
+    background-color: #eee;
+    border: 0px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    font-family: Helvetica;
+    padding: 8px;
+}
+
+input {
+    background-color: #eee;
+    border: 0px;
+    border-left: 1px solid #aaa;
+    padding-left: 16px;
+    outline: none;
 }

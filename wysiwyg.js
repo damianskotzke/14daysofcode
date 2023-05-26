@@ -5,9 +5,11 @@ const supabaseUrl = 'http://localhost:54321';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU'; // your anon key
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-// Load data
+let activeData = 1;
+
+// Load data from Supabase
 document.addEventListener('DOMContentLoaded', async function() {
-    const { data, error} = await supabase
+    let { data, error } = await supabase
         .from('contents')
         .select('content')
         .eq('id', 1)
@@ -15,8 +17,39 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     if (data && data.content) {
         editor.innerHTML = JSON.parse(data.content).content;
+        let button = document.getElementById('article-1')
+        button.style.backgroundColor = "blue";
+        button.style.color = "white";
     };
 });
+
+// Load Supabase data with the buttons
+function loadDataWithButtons(articleName, articleID) {
+    let button = document.getElementById(articleName);
+    let buttons = document.querySelectorAll('button');
+    button.addEventListener('click', async function() {
+        let { data, error } = await supabase
+            .from('contents')
+            .select('content')
+            .eq('id', articleID)
+            .single();
+    
+        if (data && data.content) {
+            editor.innerHTML = JSON.parse(data.content).content;
+            activeData = articleID;
+            buttons.forEach(button => {
+                button.style.backgroundColor = "#eee";
+                button.style.color = "black";
+            });
+            button.style.backgroundColor = "blue";
+            button.style.color = "white";
+        };
+    });
+};
+
+loadDataWithButtons('article-1', 1);
+loadDataWithButtons('article-2', 2);
+loadDataWithButtons('article-3', 3);
 
 // Objects
 const editor = document.getElementById('editor');
@@ -83,7 +116,7 @@ editor.addEventListener('mouseup', function() {
         let range = selection.getRangeAt(0);
         let rect = range.getBoundingClientRect();
         menu.style.left = rect.left + 'px';
-        menu.style.top = rect.top - rect.height + 'px';
+        menu.style.top = rect.top - rect.height - 20 + 'px';
         menu.style.display = 'block';
     } else {
         hideMenu();
@@ -247,7 +280,18 @@ editor.addEventListener('blur', async function() {
     };
     
     // Save the content to the database
-    const { data, error } = await supabase
+    if (activeData === 1) {
+        const { data, error } = await supabase
         .from('contents')
         .upsert({ id: 1, content: JSON.stringify(jsonObject) });
+    } else if (activeData === 2) {
+        const { data, error } = await supabase
+        .from('contents')
+        .upsert({ id: 2, content: JSON.stringify(jsonObject) });
+    } else if (activeData = 3) {
+        const { data, error } = await supabase
+        .from('contents')
+        .upsert({ id: 3, content: JSON.stringify(jsonObject) });
+    }
+    
 });
